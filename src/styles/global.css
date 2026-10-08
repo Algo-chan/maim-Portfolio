@@ -1,0 +1,179 @@
+@import "tailwindcss";
+
+@theme {
+  --font-sans: "Futura Now Headline", ui-sans-serif, system-ui, sans-serif;
+}
+
+html {
+  scrollbar-gutter: stable;
+}
+
+body {
+  overflow-x: hidden;
+  font-family: "Futura Now Headline", sans-serif;
+  -webkit-font-smoothing: antialiased;
+}
+
+.parent span {
+  display: inline-block;
+}
+
+h1 {
+  font-size: max(3.8rem, 7cqi);
+}
+
+.about-title {
+  font-size: max(2rem, 3cqi);
+}
+
+.featured-item-container {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 150vw;
+  height: 600px;
+}
+
+.bg-pattern-1 {
+  background-image: linear-gradient(to bottom right, #324755, #2d2d2d);
+  background-position: center;
+  background-size: cover;
+}
+
+.bg-pattern-2 {
+  background-image: linear-gradient(to bottom right, #64a1c9, #e6956c);
+}
+
+.bg-pattern-3 {
+  background-image: linear-gradient(to bottom right, #dd9a44, #0b1237);
+}
+
+.bg-pattern-4 {
+  background-image: linear-gradient(to bottom right, #a5a5a5, #2d2828);
+}
+
+.bg-pattern-5 {
+  background-image: linear-gradient(to bottom right, #b5e7dd, #e4b1e1);
+}
+
+.bg-pattern-6 {
+  background-image: linear-gradient(to bottom right, #b7b5b5, #d1d1d1);
+}
+
+.featured-item {
+  width: clamp(10rem, 100%, 16cqi);
+}
+
+@media (max-width: 1440px) {
+  .featured-item {
+    width: clamp(10rem, 100%, 32cqi);
+  }
+}
+
+@media (max-width: 1023px) {
+  .featured-item {
+    width: clamp(10rem, 100%, 48cqi);
+  }
+}
+
+.subtitle span {
+  margin-left: 0.05rem;
+}
+
+.item {
+  width: clamp(10rem, 100%, 16cqi);
+}
+
+.card {
+  width: clamp(10rem, 100%, 16cqi);
+}
+
+.stacked-cards {
+  width: clamp(10rem, 100%, 16cqi);
+}
+
+.wrap__inner {
+  perspective: 1000px;
+  width: 100%;
+  height: auto;
+}
+
+.content {
+  position: relative;
+  width: 100%;
+  height: auto;
+  display: grid;
+  place-items: center;
+  transform: rotate3d(1, 0, 0, -25deg) rotate3d(0, 1, 0, 45deg) rotate3d(0, 0, 1, 25deg);
+}
+
+.content .anim-card {
+  position: absolute;
+  right: 0;
+  overflow: hidden;
+  aspect-ratio: 1;
+  place-items: center;
+  width: clamp(12rem, 18vw, 18rem);
+  height: clamp(12rem, 18vw, 18rem);
+  border-radius: 1.5rem;
+  z-index: calc(-2.25vw - var(--card-i) * 0.03vw);
+}
+
+.content .anim-card .card__img {
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+}
+
+.exp-section {
+  padding: 2rem 0 4rem;
+}
+
+.exp-entry {
+  border-bottom: 1px solid #000;
+}
+
+.exp-index {
+  font-size: clamp(2rem, 4cqi, 3.2rem);
+}
+
+.site-footer {
+  padding: 2em 1em 6em;
+  text-align: center;
+}
+
+.social-links {
+  display: flex;
+  justify-content: center;
+  gap: 1rem;
+  margin-top: 1.5em;
+}
+
+/* Inert lenis CSS — matches reference, native scrolling */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: hidden;
+}
+
+.lenis.lenis-smooth iframe {
+  pointer-events: none;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loader {
+    display: none !important;
+  }
+}

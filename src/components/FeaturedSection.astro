@@ -1,0 +1,70 @@
+---
+import { projects } from "../data/projects";
+import { cta } from "../data/cta";
+
+const patterns = ["bg-pattern-1", "bg-pattern-2", "bg-pattern-3", "bg-pattern-4"];
+const fillerCount = Math.max(0, 6 - projects.length);
+---
+
+<section class="relative overflow-hidden">
+  <div class="featured-container">
+    <div class="featured-section">
+      <div class="absolute top-10 overflow-hidden h-28 w-full">
+        <h3 class="text-5xl md:text-6xl lg:text-8xl font-bold text-gray-400 featured-title ml-12 uppercase">Featured Work</h3>
+      </div>
+      <div class="featured-item-container z-30">
+        {
+          projects.map((project, index) =>
+            project.url ? (
+              <a href={project.url} target={project.url.startsWith("http") ? "_blank" : undefined}>
+                <div class={`featured-item rounded-3xl ${patterns[index % patterns.length]} aspect-square`}>
+                  <img
+                    src={project.image.src}
+                    width={project.image.width}
+                    height={project.image.height}
+                    alt={project.name}
+                    loading="lazy"
+                    decoding="async"
+                    class="object-contain w-11/12 rounded-3xl aspect-square m-auto overflow-hidden"
+                  />
+                  <h3 class="inline-flex flex-col pl-6 text-2xl md:text-4xl font-bold text-gray-600 absolute bottom-0 left-0 p-4">
+                    <span>{project.name}</span>
+                    <span class="text-sm">{project.short}</span>
+                  </h3>
+                </div>
+              </a>
+            ) : (
+              <div class={`featured-item rounded-3xl ${patterns[index % patterns.length]} aspect-square`}>
+                <img
+                  src={project.image.src}
+                  width={project.image.width}
+                  height={project.image.height}
+                  alt={project.name}
+                  loading="lazy"
+                  decoding="async"
+                  class="object-contain w-11/12 rounded-3xl aspect-square m-auto overflow-hidden"
+                />
+                <h3 class="inline-flex flex-col pl-6 text-2xl md:text-4xl font-bold text-gray-600 absolute bottom-0 left-0 p-4">
+                  <span>{project.name}</span>
+                  <span class="text-sm">{project.short}</span>
+                </h3>
+              </div>
+            ),
+          )
+        }
+        {
+          Array.from({ length: fillerCount }).map(() => (
+            <div class="featured-item aspect-square"></div>
+          ))
+        }
+      </div>
+      <div class="featured-content-container min-h-screen flex items-center justify-center">
+        <div class="max-w-4xl mx-auto">
+          <p class="px-6 lg:px-2 text-gray-100 text-center mt-4 text-3xl md:text-4xl lg:text-5xl featured-content !leading-snug">
+            {cta.featured}
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>

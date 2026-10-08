@@ -1,0 +1,22 @@
+---
+import Layout from "../layouts/Layout.astro";
+import SiteHeader from "../components/SiteHeader.astro";
+import HeroBanner from "../components/HeroBanner.astro";
+import AboutSection from "../components/AboutSection.astro";
+import FeaturedSection from "../components/FeaturedSection.astro";
+import ExperienceSection from "../components/ExperienceSection.astro";
+import Loader from "../components/Loader.astro";
+import SiteFooter from "../components/SiteFooter.astro";
+---
+
+<Layout>
+  <SiteHeader />
+  <main class="overflow-x-hidden">
+    <HeroBanner />
+    <AboutSection />
+    <FeaturedSection />
+    <ExperienceSection />
+  </main>
+  <Loader />
+  <SiteFooter />
+</Layout>

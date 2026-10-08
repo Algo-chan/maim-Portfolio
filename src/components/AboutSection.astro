@@ -1,0 +1,54 @@
+---
+import { about } from "../data/about";
+
+interface Segment {
+  text: string;
+  highlighted: boolean;
+}
+
+const segments: Segment[] = [];
+let rest = about.headline;
+for (const highlight of about.highlights ?? []) {
+  const index = rest.indexOf(highlight);
+  if (index === -1) continue;
+  if (index > 0) segments.push({ text: rest.slice(0, index), highlighted: false });
+  segments.push({ text: highlight, highlighted: true });
+  rest = rest.slice(index + highlight.length);
+}
+if (rest) segments.push({ text: rest, highlighted: false });
+---
+
+<section class="min-h-screen about-section mb-48 flex items-start md:items-center">
+  <div class="container mx-auto px-6 lg:px-12 pt-8">
+    <h2 class="text-left mb-8 fade-up">{about.label}</h2>
+    <div class="grid grid-cols-12 gap-y-12 lg:gap-6">
+      <div class="col-span-12 lg:col-span-6">
+        <h3 class="line-fade about-title leading-tight font-medium mb-12 lg:max-w-md xl:max-w-lg 2xl:max-w-2xl">
+          {
+            segments.map((segment) =>
+              segment.highlighted ? (
+                <span class="text-highlight text-[#363636]">{segment.text}</span>
+              ) : (
+                segment.text
+              ),
+            )
+          }
+        </h3>
+        <div class="max-w-lg lg:max-w-md">
+          {
+            about.paragraphs.map((paragraph, index) => (
+              <p class:list={index < about.paragraphs.length - 1 ? "mb-4 fade-in" : "fade-in"}>
+                {paragraph}
+              </p>
+            ))
+          }
+        </div>
+      </div>
+      <div class="col-span-12 lg:col-span-6">
+        <div class="flex justify-center lg:justify-start items-center h-full">
+          <div class="card about-container lg:-ml-24"></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
