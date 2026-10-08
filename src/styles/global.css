@@ -295,3 +295,9 @@ html.js [data-reveal="clip"] {
     display: none !important;
   }
 }
+
+@media (max-width: 479px) {
+  h1 {
+    font-size: clamp(2.4rem, 13.5vw, 3.8rem);
+  }
+}
