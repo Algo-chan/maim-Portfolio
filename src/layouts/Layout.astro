@@ -48,7 +48,9 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
   <body>
     <slot />
     <script>
-      import "../scripts/motion";
+      import { initMotion } from "../lib/motion";
+      const cleanupMotion = initMotion();
+      window.addEventListener("beforeunload", cleanupMotion, { once: true });
     </script>
   </body>
 </html>

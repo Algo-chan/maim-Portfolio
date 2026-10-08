@@ -2,8 +2,18 @@
 import { projects } from "../data/projects";
 import { cta } from "../data/cta";
 
-const patterns = ["bg-pattern-1", "bg-pattern-2", "bg-pattern-3", "bg-pattern-4"];
-const fillerCount = Math.max(0, 6 - projects.length);
+const slotClasses = [
+  "bg-pattern-6",
+  "bg-pattern-1",
+  "bg-pattern-2",
+  "bg-pattern-3",
+  "bg-pattern-4",
+  "bg-pattern-1",
+  "bg-pattern-5 bg-green-500",
+  "",
+  "",
+];
+const fillerCount = Math.max(0, 9 - projects.length);
 ---
 
 <section class="relative overflow-hidden">
@@ -17,7 +27,7 @@ const fillerCount = Math.max(0, 6 - projects.length);
           projects.map((project, index) =>
             project.url ? (
               <a href={project.url} target={project.url.startsWith("http") ? "_blank" : undefined}>
-                <div class={`featured-item rounded-3xl ${patterns[index % patterns.length]} aspect-square`}>
+                <div class={`flex featured-item rounded-3xl ${slotClasses[index % slotClasses.length]} aspect-square`}>
                   <img
                     src={project.image.src}
                     width={project.image.width}
@@ -34,7 +44,7 @@ const fillerCount = Math.max(0, 6 - projects.length);
                 </div>
               </a>
             ) : (
-              <div class={`featured-item rounded-3xl ${patterns[index % patterns.length]} aspect-square`}>
+              <div class={`flex featured-item rounded-3xl ${slotClasses[index % slotClasses.length]} aspect-square`}>
                 <img
                   src={project.image.src}
                   width={project.image.width}
@@ -53,8 +63,8 @@ const fillerCount = Math.max(0, 6 - projects.length);
           )
         }
         {
-          Array.from({ length: fillerCount }).map(() => (
-            <div class="featured-item aspect-square"></div>
+          Array.from({ length: fillerCount }).map((_, i) => (
+            <div class={`featured-item aspect-square ${slotClasses[(projects.length + i) % slotClasses.length]}`.trim()}></div>
           ))
         }
       </div>

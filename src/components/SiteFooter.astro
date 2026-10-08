@@ -14,10 +14,10 @@ const socialIcons: Record<string, string> = {
 <footer class="site-footer">
   <div class="text-center">
     <div class="overflow-hidden">
-      <div class="fadeup text-[#363636] font-medium uppercase text-xs">{site.location}</div>
+      <div data-reveal="fade-up" class="fadeup text-[#363636] font-medium uppercase text-xs">{site.location}</div>
     </div>
     <div class="overflow-hidden">
-      <a href={`mailto:${site.email}`} class="fadeup text-gray-400 font-medium uppercase text-xs">
+      <a href={`mailto:${site.email}`} data-reveal="fade-up" data-magnetic data-underline class="fadeup text-gray-400 font-medium uppercase text-xs">
         {site.email}
       </a>
     </div>
@@ -30,6 +30,7 @@ const socialIcons: Record<string, string> = {
           target="_blank"
           rel="noopener noreferrer"
           aria-label={link.label}
+          data-underline
           class="text-gray-400 transition-colors hover:text-[#363636]"
         >
           <svg

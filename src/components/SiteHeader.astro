@@ -6,12 +6,12 @@ import { site } from "../data/site";
   <nav class="container px-6 lg:px-12 py-5 mx-auto flex items-center relative">
     <div class="absolute left-1/2 -translate-x-1/2 text-center mt-4">
       <div class="overflow-hidden">
-        <a href="/" class="fadeup block text-[#363636] font-medium uppercase text-xs tracking-widest">
+        <a href="/" data-reveal="fade-up" data-delay="1.8" data-magnetic class="fadeup block text-[#363636] font-medium uppercase text-xs tracking-widest">
           {site.firstName} {site.lastName}
         </a>
       </div>
       <div class="overflow-hidden">
-        <div class="fadeup text-gray-400 font-medium uppercase text-[10px]">{site.location}</div>
+        <div data-reveal="fade-up" data-delay="1.8" class="fadeup text-gray-400 font-medium uppercase text-[10px]">{site.location}</div>
       </div>
     </div>
     <div class="flex items-center gap-6 md:gap-10 ml-auto"></div>
