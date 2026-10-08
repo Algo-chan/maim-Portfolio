@@ -36,15 +36,17 @@ const cardSlots = Array.from({ length: 18 });
               <div class="anim-card" style={`--card-i:${index}`}>
                 <div class="card__img">
                   <div class={`shadow-lg flex rounded-3xl ${stackPatterns[index]} aspect-square`}>
-                    <img
-                      src={project.image.src}
-                      width={project.image.width}
-                      height={project.image.height}
-                      alt={project.name}
-                      loading="lazy"
-                      decoding="async"
-                      class="object-contain w-11/12 rounded-3xl aspect-square m-auto"
-                    />
+                    {project.image && (
+                      <img
+                        src={project.image.src}
+                        width={project.image.width}
+                        height={project.image.height}
+                        alt={project.name}
+                        loading="lazy"
+                        decoding="async"
+                        class="object-contain w-11/12 rounded-3xl aspect-square m-auto"
+                      />
+                    )}
                   </div>
                 </div>
               </div>

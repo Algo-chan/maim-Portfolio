@@ -1,7 +1,8 @@
-import fcnCare from "../assets/projects/fcn-care.png";
-import localConnect from "../assets/projects/local-connect.png";
-import goldBot from "../assets/projects/gold-bot.png";
-import mahad from "../assets/projects/mahad.png";
+import fcnWeb from "../assets/projects/fcn-care-1.png";
+import incomeWeb from "../assets/projects/income-calculator-1.png";
+import queuWeb from "../assets/projects/queu-system-1.png";
+import mahadWeb from "../assets/projects/mahad-1.png";
+import nexbotWeb from "../assets/projects/nexbot-1.png";
 
 export interface Project {
   /** Displayed as 01, 02, ... */
@@ -11,15 +12,20 @@ export interface Project {
   short: string;
   description: string;
   tags: string[];
-  /** Empty string renders no link wrapper */
-  url: string;
-  image: ImageMetadata;
+  /** "View in web" link. Empty/absent renders no Live button */
+  webUrl?: string;
+  /** "View in GitHub" link. Empty/absent renders no Code button */
+  repoUrl?: string;
+  /** Static screenshot of the project's landing page */
+  image?: ImageMetadata;
+  /** Card background colour sampled from the screenshot */
+  bg?: string;
 }
 
 /**
  * Featured work.
- * [EDIT ME] every description below is a first draft — rewrite them in your own words,
- * fill in the real URLs, and correct any stacks I guessed.
+ * [EDIT ME] tags/descriptions are placeholders — rewrite in your own words and
+ * confirm the stack per project. Screenshots live in src/assets/projects/.
  */
 export const projects: Project[] = [
   {
@@ -27,39 +33,73 @@ export const projects: Project[] = [
     name: "FCN Care",
     short: "Healthcare",
     description:
-      "Healthcare platform for Dire Dawa — appointments, patient records, and the clinic workflows in between.",
+      "Fast Care Now (FCN) — digital healthcare platform for appointments, patient records, and clinic workflows.",
     tags: ["[EDIT ME] stack"],
-    url: "",
-    image: fcnCare,
+    webUrl: "https://fcncare.com",
+    repoUrl: "https://github.com/Algo-chan/FCN-new.git",
+    image: fcnWeb,
+    bg: "#073047",
   },
   {
     index: "02",
-    name: "LocalConnect",
-    short: "Marketplace",
-    description:
-      "Local services marketplace connecting people in the neighbourhood with the hands that can help.",
-    tags: ["Flutter", "Node.js"],
-    url: "",
-    image: localConnect,
+    name: "School Management System",
+    short: "Education",
+    description: "School management system — students, classes, grades, and day-to-day admin.",
+    tags: ["[EDIT ME] stack"],
+    webUrl: "",
+    repoUrl: "https://github.com/Algo-chan/School-Management.git",
   },
   {
     index: "03",
-    name: "Gold Scalping Bot",
-    short: "Trading",
-    description:
-      "Python + Streamlit + MetaTrader 5 bot that scalps gold (XAUUSD) with an AI strategy layer.",
-    tags: ["Python", "Streamlit", "MT5"],
-    url: "",
-    image: goldBot,
+    name: "Income Calculator",
+    short: "Web tool",
+    description: "Income/budget calculator tool (FlowBudget) — track money in and out, plan monthly budgets.",
+    tags: ["[EDIT ME] stack"],
+    webUrl: "https://income-calculator-seven.vercel.app/",
+    repoUrl: "https://github.com/Algo-chan/income-calculator.git",
+    image: incomeWeb,
+    bg: "#0c1219",
   },
   {
     index: "04",
-    name: "Mahad School Website",
-    short: "Education",
-    description:
-      "Website for a local school — admissions, announcements, and a homepage parents can actually use.",
+    name: "Queue System",
+    short: "Government services",
+    description: "Citizen-side queue platform — take a number, track your turn, for government services.",
     tags: ["[EDIT ME] stack"],
-    url: "",
-    image: mahad,
+    webUrl: "https://queu-system.vercel.app/",
+    repoUrl: "https://github.com/Algo-chan/Queu-System.git",
+    image: queuWeb,
+    bg: "#4175c6",
+  },
+  {
+    index: "05",
+    name: "Mahad Al-Towheed School",
+    short: "Education",
+    description: "Website for Mahad Al-Towheed Islamic School — admissions, announcements, and program info.",
+    tags: ["[EDIT ME] stack"],
+    webUrl: "https://mahad.fcncare.com",
+    repoUrl: "https://github.com/Algo-chan/Mahad-site.git",
+    image: mahadWeb,
+    bg: "#315b4d",
+  },
+  {
+    index: "06",
+    name: "Nexbot",
+    short: "Commercial website",
+    description: "NexBot Studio — commercial site for an AI bot agency: services, pricing, and portfolio.",
+    tags: ["[EDIT ME] stack"],
+    webUrl: "https://nexbot-eta.vercel.app/",
+    repoUrl: "https://github.com/Algo-chan/nexbot.git",
+    image: nexbotWeb,
+    bg: "#2c1709",
+  },
+  {
+    index: "07",
+    name: "E-commerce Store",
+    short: "Commerce",
+    description: "Simple e-commerce store — products, cart, and checkout flow.",
+    tags: ["[EDIT ME] stack"],
+    webUrl: "",
+    repoUrl: "https://github.com/Algo-chan/CodeAlpha_Simple_E-commerce_store.git",
   },
 ];

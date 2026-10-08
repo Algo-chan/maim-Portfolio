@@ -87,6 +87,7 @@ export const MOTION = {
     dropInDelay: 1.5,
     dropInDuration: 1,
     dropInEase: "elastic.out(1, 0.7)",
+    dropInStagger: 0.12,
     tiltEaseDuration: 0.8,
     tiltRest: 3,
     scaleDuration: 0.4,
@@ -99,13 +100,9 @@ export const MOTION = {
     flipEase: "power2.inOut",
     fanScaleDesktop: 1.3,
     fanScaleMobile: 1.1,
-    fanDuration: 2.5,
+    fanSpanDesktop: 800,
+    fanSpanMobile: 400,
     fanEase: "expoScale(0.5,7,none)",
-    arcResetStart: "top 80%",
-    arcResetEnd: "bottom 100%",
-    fanStart: "top 1%",
-    fanEndDesktop: "+=800",
-    fanEndMobile: "+=400",
     mobileWidth: 600,
     desktopWidth: 850,
     arcHeight: 75,
@@ -196,7 +193,6 @@ function initSmoothScroll(): Lenis | null {
   });
   lenis.on("scroll", ScrollTrigger.update);
   gsap.ticker.add((time) => lenis.raf(time * 1000));
-  gsap.ticker.lagSmoothing(0);
   return lenis;
 }
 
@@ -269,7 +265,7 @@ function arcPosition({
   totalItems,
   containerWidth,
   arcHeight,
-  tiltAdjust = 0,
+  tiltAdjust = 7,
 }: {
   index: number;
   totalItems: number;
@@ -277,12 +273,12 @@ function arcPosition({
   arcHeight: number;
   tiltAdjust?: number;
 }) {
-  const { tiltDegrees, irregularities } = MOTION.cards;
+  const { irregularities } = MOTION.cards;
   const step = containerWidth / totalItems;
   const offset = (totalItems - 1) / 2;
   const x = (index - offset) * step;
   const curve = arcHeight * Math.sin((Math.PI / (totalItems - 1)) * index);
-  const tiltAngle = (index - (totalItems - 1) / 2) * tiltDegrees + tiltAdjust;
+  const tiltAngle = (index - (totalItems - 1) / 2) * tiltAdjust;
   const topPosition = arcHeight - curve + (irregularities[index] ?? 0);
   return { x, tiltAngle, topPosition };
 }
@@ -292,17 +288,95 @@ function stackedCardsToAbout() {
   const items = document.querySelectorAll(".item");
   if (!container || !items.length) return;
   const total = items.length;
-  const { desktopWidth, mobileWidth, arcHeight, tiltDegreesMobile } = MOTION.cards;
+  const { desktopWidth, mobileWidth, arcHeight } = MOTION.cards;
   const containerWidth = isMobileScreen() ? mobileWidth : desktopWidth;
+
+  const resettable = document.querySelector(".about-section") as HTMLElement | null;
+  const viewportHeight = window.innerHeight;
+  const sectionHeight = resettable ? resettable.offsetHeight : viewportHeight;
+  const cardRange = Math.max(1, sectionHeight - 0.2 * viewportHeight);
+
+  const { dropInDelay, dropInDuration, dropInEase, dropInStagger, tiltEaseDuration, tiltRest, scaleDuration, scaleEase, tiltDur, tiltEase, arcDur, arcEase, flipDuration, flipEase } = MOTION.cards;
+
+  let entered = 0;
+  const runAfterAll: Array<() => void> = [];
 
   items.forEach((element, index) => {
     const item = element as HTMLElement;
-    const arc = arcPosition({ index, totalItems: total, containerWidth, arcHeight });
-    const displaced = arcPosition({ index, totalItems: total, containerWidth: 0, arcHeight: 0, tiltAdjust: tiltDegreesMobile });
+    const arc = arcPosition({ index, totalItems: total, containerWidth, arcHeight, tiltAdjust: MOTION.cards.tiltDegrees });
+    const compact = arcPosition({ index, totalItems: total, containerWidth: 0, arcHeight: 0, tiltAdjust: 5 });
 
-    const { dropInDelay, dropInDuration, dropInEase, tiltEaseDuration, tiltRest, scaleDuration, scaleEase, tiltDur, tiltEase, arcDur, arcEase, flipDuration, flipEase } = MOTION.cards;
+    runAfterAll[index] = () => {
+      const flipState = Flip.getState(container);
+      document.querySelector(".about-container")?.appendChild(container);
+      gsap
+        .timeline({
+          scrollTrigger: {
+            trigger: ".about-section",
+            start: "top 80%",
+            end: "bottom 70%",
+            scrub: true,
+            immediateRender: false,
+          },
+          x: compact.x,
+          rotation: compact.tiltAngle,
+          top: `${compact.topPosition}px`,
+        })
+        .add(Flip.from(flipState, { duration: flipDuration, ease: flipEase }));
+      gsap.to(".text-highlight", {
+        scrollTrigger: {
+          trigger: ".about-section",
+          start: MOTION.about.highlightStart,
+          end: MOTION.about.highlightEnd,
+          scrub: true,
+          immediateRender: false,
+        },
+        stagger: MOTION.about.highlightStagger,
+        color: MOTION.about.highlightColor,
+      });
+      matchMedia.add("(min-width: 1024px)", () => {
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: ".about-section",
+              start: "top 80%",
+              end: `+=${cardRange + MOTION.cards.fanSpanDesktop}`,
+              scrub: true,
+              immediateRender: false,
+            },
+          })
+          .to(item, { x: 0, rotation: 0, top: 0, duration: cardRange, ease: "none" })
+          .to(item, {
+            x: index * 150,
+            scale: MOTION.cards.fanScaleDesktop,
+            top: index * 50,
+            duration: MOTION.cards.fanSpanDesktop,
+            ease: MOTION.cards.fanEase,
+          });
+      });
+      matchMedia.add("(max-width: 1024px)", () => {
+        gsap
+          .timeline({
+            scrollTrigger: {
+              trigger: ".about-section",
+              start: "top 80%",
+              end: `+=${cardRange + MOTION.cards.fanSpanMobile}`,
+              scrub: true,
+              immediateRender: false,
+            },
+          })
+          .to(item, { x: 0, rotation: 0, top: 0, duration: cardRange, ease: "none" })
+          .to(item, {
+            x: arc.x,
+            scale: MOTION.cards.fanScaleMobile,
+            top: index * 5,
+            duration: MOTION.cards.fanSpanMobile,
+            ease: MOTION.cards.fanEase,
+          });
+      });
+    };
 
-    const timeline = gsap.timeline();
+    const timeline = gsap.timeline({ delay: index * dropInStagger });
     gsap.set(item, { x: 0, y: 300, rotation: -45, scale: 1.1, opacity: 0 });
     timeline
       .to(item, { delay: dropInDelay, opacity: 1, duration: dropInDuration, y: 0, ease: dropInEase })
@@ -311,74 +385,10 @@ function stackedCardsToAbout() {
       .to(item, { duration: tiltDur, rotation: arc.tiltAngle, ease: tiltEase }, "<50%")
       .to(item, { duration: arcDur, x: arc.x, top: `${arc.topPosition}px`, ease: arcEase }, "<0%")
       .call(() => {
-        const flipState = Flip.getState(container);
-        document.querySelector(".about-container")?.appendChild(container);
-        gsap
-          .timeline({
-            scrollTrigger: {
-              trigger: ".about-section",
-              start: "top 80%",
-              end: "bottom 70%",
-              scrub: true,
-              immediateRender: false,
-            },
-          })
-          .add(Flip.from(flipState, { duration: flipDuration, ease: flipEase }));
-        gsap.to(item, {
-          scrollTrigger: {
-            trigger: ".about-section",
-            start: MOTION.cards.arcResetStart,
-            end: MOTION.cards.arcResetEnd,
-            scrub: true,
-            immediateRender: false,
-          },
-          x: 0,
-          rotation: 0,
-          top: 0,
-        });
-        gsap.to(".text-highlight", {
-          scrollTrigger: {
-            trigger: ".about-section",
-            start: MOTION.about.highlightStart,
-            end: MOTION.about.highlightEnd,
-            scrub: true,
-            immediateRender: false,
-          },
-          stagger: MOTION.about.highlightStagger,
-          color: MOTION.about.highlightColor,
-        });
-        matchMedia.add("(min-width: 1024px)", () => {
-          gsap.to(item, {
-            scrollTrigger: {
-              trigger: ".about-section",
-              start: MOTION.cards.fanStart,
-              end: MOTION.cards.fanEndDesktop,
-              scrub: true,
-              immediateRender: false,
-            },
-            x: index * 150,
-            scale: MOTION.cards.fanScaleDesktop,
-            top: index * 50,
-            duration: MOTION.cards.fanDuration,
-            ease: MOTION.cards.fanEase,
-          });
-        });
-        matchMedia.add("(max-width: 1024px)", () => {
-          gsap.to(item, {
-            scrollTrigger: {
-              trigger: ".about-section",
-              start: MOTION.cards.fanStart,
-              end: MOTION.cards.fanEndMobile,
-              scrub: true,
-              immediateRender: false,
-            },
-            x: displaced.x,
-            scale: MOTION.cards.fanScaleMobile,
-            top: index * 5,
-            duration: MOTION.cards.fanDuration,
-            ease: MOTION.cards.fanEase,
-          });
-        });
+        entered += 1;
+        if (entered === total) {
+          runAfterAll.forEach((run) => run());
+        }
       });
   });
 }
@@ -806,6 +816,7 @@ const matchMedia = gsap.matchMedia();
 
 function bootAfterLoad() {
   window.setTimeout(() => {
+    lenisInstance?.scrollTo(0, { immediate: true });
     gsap.to(window, { duration: 0, scrollTo: 0 });
     window.setTimeout(
       () => {
