@@ -142,9 +142,10 @@ export const MOTION = {
     rotationToZ: 120,
     rotationToY: -30,
     stagger: 0.005,
-    start: "top center",
-    end: "+=210%",
+    start: "top top",
+    end: "+=2000",
     scrub: 1,
+    pin: true,
   },
 
   /* Experience entries */
@@ -631,38 +632,32 @@ function featuredGallery() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Experience: 3D card stack                                         */
+/*  Experience: 3D card stack (reference behaviour, plus a reveal)    */
 /* ------------------------------------------------------------------ */
 class CardStack {
   private content: HTMLElement;
-  private images: HTMLElement[];
-  private imagesTotal = 0;
+  private cards: HTMLElement[];
   private timeline: gsap.core.Timeline | null = null;
+  private timeout: number | undefined;
 
   constructor(private wrapElement: HTMLElement) {
     this.content = this.wrapElement.querySelector(".content") as HTMLElement;
-    this.images = Array.from(this.content.querySelectorAll(".anim-card")) as HTMLElement[];
-    this.imagesTotal = this.images.length;
-    this.setup();
-  }
-
-  private setup() {
+    this.cards = Array.from(this.content.querySelectorAll<HTMLElement>(".anim-card"));
     this.scroll();
-    let resizeTimer: number | undefined;
     window.addEventListener("resize", () => {
-      window.clearTimeout(resizeTimer);
-      resizeTimer = window.setTimeout(() => this.scroll(), 100);
+      window.clearTimeout(this.timeout);
+      this.timeout = window.setTimeout(() => this.scroll(), 100);
     });
   }
 
   private scroll() {
-    const { transform, zFromBase, zFromStep, zToBase, zToStep, rotationFrom, rotationToZ, rotationToY, stagger, start, end, scrub } = MOTION.stack;
+    const { transform, zFromBase, zFromStep, zToBase, zToStep, rotationFrom, rotationToZ, rotationToY, stagger, start, end, scrub, pin } = MOTION.stack;
     const width = window.innerWidth;
+    const total = this.cards.length;
+    const section = this.wrapElement.closest("section") ?? undefined;
     this.content.style.transform = transform;
     this.content.style.opacity = "0";
     this.timeline?.kill();
-    const images = this.images;
-    const imagesTotal = this.imagesTotal;
     this.timeline = gsap
       .timeline({
         defaults: { ease: "power1" },
@@ -671,20 +666,28 @@ class CardStack {
           start,
           end,
           scrub,
-          onEnter: () => gsap.set(this.content, { opacity: 1 }),
+          pin: pin ? section : false,
+          onEnter: () => {
+            gsap.set(this.content, { opacity: 1 });
+            gsap.fromTo(
+              this.cards,
+              { x: 180, opacity: 0, scale: 0.7 },
+              { x: 0, opacity: 1, scale: 1, duration: 0.7, ease: "power3.out", stagger: 0.04 },
+            );
+          },
           onEnterBack: () => gsap.set(this.content, { opacity: 1 }),
           onLeave: () => gsap.set(this.content, { opacity: 0 }),
           onLeaveBack: () => gsap.set(this.content, { opacity: 0 }),
         },
       })
       .fromTo(
-        images as never,
+        this.cards as never,
         { z: (index: number) => zFromBase * width - index * -zFromStep * width } as gsap.TweenVars,
-        { z: (index: number) => zToBase * width + (imagesTotal - index - 1) * zToStep * width } as gsap.TweenVars,
+        { z: (index: number) => zToBase * width + (total - index - 1) * zToStep * width } as gsap.TweenVars,
         0,
       )
       .fromTo(
-        images as never,
+        this.cards as never,
         { rotationZ: rotationFrom } as gsap.TweenVars,
         { rotationY: rotationToY, rotationZ: rotationToZ, stagger } as gsap.TweenVars,
         0,

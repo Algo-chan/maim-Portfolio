@@ -26,8 +26,8 @@ const cardSlots = Array.from({ length: 18 });
 ---
 
 <section class="relative -mt-64">
-  <div class="min-h-96 md:min-h-[100vh]">
-    <div data-stack-1 data-stack class="wrap__inner">
+  <div class="min-h-96 md:min-h-[100vh] grid place-content-center">
+    <div data-stack-1 class="wrap__inner">
       <div class="content content--1">
         {
           cardSlots.map((_, index) => {
@@ -35,7 +35,7 @@ const cardSlots = Array.from({ length: 18 });
             return (
               <div class="anim-card" style={`--card-i:${index}`}>
                 <div class="card__img">
-                  <div class={`shadow-lg flex rounded-3xl ${stackPatterns[index]} aspect-square`}>
+                  <div class={`shadow-lg flex rounded-lg ${stackPatterns[index]} aspect-square`}>
                     {project.image && (
                       <img
                         src={project.image.src}
@@ -44,11 +44,13 @@ const cardSlots = Array.from({ length: 18 });
                         alt={project.name}
                         loading="lazy"
                         decoding="async"
-                        class="object-contain w-11/12 rounded-3xl aspect-square m-auto"
+                        class="object-contain w-11/12 rounded-lg aspect-square m-auto"
                       />
                     )}
                   </div>
                 </div>
+                <span class="card-title">{project.name}</span>
+                <span class="card-meta">{project.short}</span>
               </div>
             );
           })
@@ -58,7 +60,7 @@ const cardSlots = Array.from({ length: 18 });
     <div class="text-center absolute top-0 left-0 w-full h-full">
       <div class="flex items-center justify-center h-full relative">
         <div class="-z-10 sticky">
-          <h3 data-reveal="fade-up" class="fade-up text-5xl md:text-6xl lg:text-8xl font-bold text-gray-400 featured-title ml-12 uppercase">
+          <h3 class="fade-up featured-title text-5xl md:text-6xl lg:text-8xl font-bold text-gray-400 ml-12 uppercase">
             Experience
           </h3>
         </div>
