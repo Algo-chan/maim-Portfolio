@@ -9,9 +9,11 @@
     "build": "astro build",
     "preview": "astro preview",
     "check": "astro check",
+    "assets": "node scripts/gen-assets.mjs",
     "placeholders": "node scripts/gen-placeholders.mjs"
   },
   "dependencies": {
+    "@astrojs/sitemap": "^3.7.4",
     "astro": "^5.16.0",
     "gsap": "^3.13.0",
     "lenis": "^1.3.26",

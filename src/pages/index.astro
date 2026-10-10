@@ -7,9 +7,28 @@ import FeaturedSection from "../components/FeaturedSection.astro";
 import ExperienceSection from "../components/ExperienceSection.astro";
 import Loader from "../components/Loader.astro";
 import SiteFooter from "../components/SiteFooter.astro";
+import { site } from "../data/site";
+
+const SITE_URL = (import.meta.env.SITE_URL || "http://localhost:4321").replace(/\/+$/, "");
+
+const personSchema = {
+  "@context": "https://schema.org",
+  "@type": "Person",
+  name: "Choppa",
+  jobTitle: "Full Stack Developer",
+  url: SITE_URL,
+  image: `${SITE_URL}/og.png`,
+  sameAs: site.links.map((link) => link.url),
+  alumniOf: {
+    "@type": "CollegeOrUniversity",
+    name: "Dire Dawa University",
+  },
+  knowsAbout: ["React", "Node.js", "TypeScript", "PostgreSQL", "Cybersecurity"],
+};
 ---
 
 <Layout>
+  <script type="application/ld+json" set:html={JSON.stringify(personSchema)} />
   <SiteHeader />
   <main class="overflow-x-hidden">
     <HeroBanner />

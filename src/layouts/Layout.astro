@@ -1,16 +1,29 @@
 ---
 import "../styles/global.css";
-import { site } from "../data/site";
 
 interface Props {
   title?: string;
   description?: string;
+  /** Shorter description used for Twitter cards */
+  twitterDescription?: string;
+  /** Absolute or site-relative URL to a card image (defaults to /og.png) */
+  image?: string;
+  /** Page URL used for og:url and canonical. Defaults to the current path. */
+  url?: string;
 }
 
+const SITE_URL = (import.meta.env.SITE_URL || "http://localhost:4321").replace(/\/+$/, "");
+
 const {
-  title = `${site.name} — ${site.role}`,
-  description = `${site.name} (${site.location}). ${site.role}. ${site.tagline}.`,
+  title = "Choppa | Full Stack Developer & Founder of FCN",
+  description = "Full stack developer and founder of FCN, a live healthcare platform in Ethiopia. I build with React, Node.js and TypeScript, and think like an attacker.",
+  twitterDescription = "Full stack developer and founder of FCN, a live healthcare platform in Ethiopia.",
+  image = `${SITE_URL}/og.png`,
+  url = `${SITE_URL}${Astro.url.pathname}`,
 } = Astro.props;
+
+const ogImage = image.startsWith("http") ? image : `${SITE_URL}${image}`;
+const ogImageAlt = "Choppa, Full Stack Developer and Founder of FCN";
 
 const gaId = import.meta.env.PUBLIC_GA_ID;
 ---
@@ -20,14 +33,34 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name=<meta name="google-site-verification" content="zX1J1cgX-B_waC6YwCim2Cx1GZgYYSTyOFofY8QqzhM" />
+
     <title>{title}</title>
     <meta name="description" content={description} />
-    <meta name="generator" content={Astro.generator} />
+    <link rel="canonical" href={url} />
+
     <meta property="og:type" content="website" />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={ogImageAlt} />
+    <meta property="og:url" content={url} />
+    <meta property="og:site_name" content="Choppa" />
+
     <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={twitterDescription} />
+    <meta name="twitter:image" content={ogImage} />
+
+    <meta name="theme-color" content="#ffffff" />
+    <meta name="generator" content={Astro.generator} />
+
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="icon" type="image/x-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
     <link rel="stylesheet" href="https://fonts.cdnfonts.com/css/futura-now-headline" />
     {
       gaId && (
