@@ -216,16 +216,9 @@ h1 {
   color: #a3a3a3;
 }
 
-.exp-section {
-  padding: 2rem 0 4rem;
-}
-
-.exp-entry {
-  border-bottom: 1px solid #000;
-}
-
-.exp-index {
-  font-size: clamp(2rem, 4cqi, 3.2rem);
+/* Experience section accent — resolved by GSAP for hover states */
+:root {
+  --experience-accent: #990900;
 }
 
 .site-footer {
@@ -274,6 +267,46 @@ html.js [data-reveal] {
 
 html.js [data-reveal="clip"] {
   will-change: transform, clip-path;
+}
+
+/* Experience section — hidden initial states (only while JS + motion run) */
+html.js [data-reveal="exp-heading"],
+html.js [data-reveal="exp-line"] {
+  transform: translateY(101%);
+}
+
+html.js [data-reveal="exp-index"] {
+  opacity: 0;
+  transform: translateY(24px);
+}
+
+html.js [data-reveal="exp-bullet"] {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+html.js [data-reveal="exp-meta"],
+html.js [data-reveal="exp-stat"] {
+  opacity: 0;
+}
+
+html.js [data-reveal="exp-divider"] {
+  transform: scaleX(0);
+  transform-origin: left center;
+}
+
+/* Experience bullet markers: match the index number, redden + thicken on hover */
+.exp-entry [data-reveal="exp-bullet"]::before {
+  transition:
+    background-color 0.4s cubic-bezier(0.215, 0.61, 0.355, 1),
+    width 0.4s cubic-bezier(0.215, 0.61, 0.355, 1),
+    height 0.4s cubic-bezier(0.215, 0.61, 0.355, 1);
+}
+
+.exp-entry.is-active [data-reveal="exp-bullet"]::before {
+  width: 0.375rem;
+  height: 0.375rem;
+  background-color: var(--experience-accent);
 }
 
 /* Featured card action buttons */

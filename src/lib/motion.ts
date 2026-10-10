@@ -148,14 +148,18 @@ export const MOTION = {
     pin: true,
   },
 
-  /* Experience entries */
+  /* Experience section — heading, timeline entries, hover */
   experience: {
-    entryStart: "top 82%",
-    entryDuration: 0.9,
-    entryEase: "power3.out",
-    indexDuration: 0.6,
-    indexDelay: 0.15,
-    indexEase: "power2.out",
+    start: "top 85%",
+    toggleActions: "play none none none",
+    heading: { yPercent: 100, duration: 1, ease: "expo.out" },
+    divider: { duration: 0.9, ease: "power3.inOut" },
+    index: { y: 24, duration: 0.6, ease: "power2.out" },
+    line: { duration: 0.8, ease: "power3.out", stagger: 0.08 },
+    bullets: { y: 20, duration: 0.6, ease: "power2.out", stagger: 0.08 },
+    meta: { duration: 0.6, ease: "power2.out", stagger: 0.06 },
+    hover: { shift: 12, dim: 0.5, arrow: 4, duration: 0.4, ease: "power3.out" },
+    reduced: { duration: 0.5, ease: "power1.out" },
   },
 
   /* Magnetic hover + underlined links */
@@ -181,6 +185,9 @@ export const MOTION = {
 const prefersReducedMotion = () => window.matchMedia("(prefers-reduced-motion: reduce)").matches;
 const isFinePointer = () => window.matchMedia("(hover: hover) and (pointer: fine)").matches;
 const isMobileScreen = () => window.innerWidth <= 1023;
+/** Accent colour for hover states, resolved from CSS so it follows the colour scheme. */
+const experienceAccent = () =>
+  getComputedStyle(document.documentElement).getPropertyValue("--experience-accent").trim() || "#990900";
 
 /* ------------------------------------------------------------------ */
 /*  Smooth scroll (Lenis ↔ GSAP)                                       */
@@ -702,32 +709,145 @@ function initCardStack() {
 }
 
 /* ------------------------------------------------------------------ */
-/*  Experience entries                                                 */
+/*  Experience section — masked heading, per-entry timeline, hover     */
 /* ------------------------------------------------------------------ */
-function experienceEntries() {
-  const { entryStart, entryDuration, entryEase, indexDuration, indexDelay, indexEase } = MOTION.experience;
-  document.querySelectorAll(".exp-entry").forEach((entry) => {
-    const indexElement = entry.querySelector(".exp-index");
-    gsap.to(entry, {
-      scrollTrigger: { trigger: entry, start: entryStart, toggleActions: MOTION.reveal.toggleActions },
-      opacity: 1,
-      y: 0,
-      duration: entryDuration,
-      ease: entryEase,
+function experienceSection(): () => void {
+  const cfg = MOTION.experience;
+  const listeners: Array<() => void> = [];
+
+  const ctx = gsap.context(() => {
+    const heading = document.querySelector<HTMLElement>("[data-reveal='exp-heading']");
+    if (heading) {
+      gsap.fromTo(
+        heading,
+        { yPercent: cfg.heading.yPercent },
+        {
+          yPercent: 0,
+          duration: cfg.heading.duration,
+          ease: cfg.heading.ease,
+          scrollTrigger: { trigger: heading, start: cfg.start, once: true },
+        },
+      );
+    }
+
+    document.querySelectorAll<HTMLElement>("[data-reveal='exp-entry']").forEach((entry) => {
+      const divider = entry.querySelector<HTMLElement>("[data-reveal='exp-divider']");
+      const index = entry.querySelector<HTMLElement>("[data-reveal='exp-index']");
+      const lines = entry.querySelectorAll<HTMLElement>("[data-reveal='exp-line']");
+      const bullets = entry.querySelectorAll<HTMLElement>("[data-reveal='exp-bullet']");
+      const metas = entry.querySelectorAll<HTMLElement>("[data-reveal='exp-meta'], [data-reveal='exp-stat']");
+
+      const timeline = gsap.timeline({
+        scrollTrigger: { trigger: entry, start: cfg.start, toggleActions: cfg.toggleActions, once: true },
+      });
+
+      if (divider) {
+        timeline.fromTo(
+          divider,
+          { scaleX: 0 },
+          { scaleX: 1, duration: cfg.divider.duration, ease: cfg.divider.ease, transformOrigin: "left center" },
+          0,
+        );
+      }
+      if (index) {
+        timeline.fromTo(
+          index,
+          { y: cfg.index.y, opacity: 0 },
+          { y: 0, opacity: 1, duration: cfg.index.duration, ease: cfg.index.ease },
+          0.1,
+        );
+      }
+      if (lines.length) {
+        timeline.fromTo(
+          lines,
+          { yPercent: 100 },
+          { yPercent: 0, duration: cfg.line.duration, ease: cfg.line.ease, stagger: cfg.line.stagger },
+          0.15,
+        );
+      }
+      if (bullets.length) {
+        timeline.fromTo(
+          bullets,
+          { y: cfg.bullets.y, opacity: 0 },
+          { y: 0, opacity: 1, duration: cfg.bullets.duration, ease: cfg.bullets.ease, stagger: cfg.bullets.stagger },
+          0.4,
+        );
+      }
+      if (metas.length) {
+        timeline.fromTo(
+          metas,
+          { opacity: 0 },
+          { opacity: 1, duration: cfg.meta.duration, ease: cfg.meta.ease, stagger: cfg.meta.stagger },
+          0.6,
+        );
+      }
     });
-    if (indexElement) {
-      gsap.to(indexElement, {
-        scrollTrigger: { trigger: entry, start: entryStart, toggleActions: MOTION.reveal.toggleActions },
-        opacity: 1,
-        x: 0,
-        duration: indexDuration,
-        delay: indexDelay,
-        ease: indexEase,
+
+    if (isFinePointer()) {
+      const accent = experienceAccent();
+      const entries = Array.from(document.querySelectorAll<HTMLElement>("[data-reveal='exp-entry']"));
+      const { duration, ease, dim, shift, arrow } = cfg.hover;
+
+      entries.forEach((entry) => {
+        const title = entry.querySelector<HTMLElement>("[data-exp-title]");
+        const index = entry.querySelector<HTMLElement>("[data-reveal='exp-index']");
+        const arrowEl = entry.querySelector<HTMLElement>("[data-exp-arrow]");
+        const baseColor = index ? getComputedStyle(index).color : "";
+
+        const onEnter = () => {
+          entry.classList.add("is-active");
+          entries.forEach((other) => {
+            if (other !== entry) gsap.to(other, { opacity: dim, duration, ease, overwrite: "auto" });
+          });
+          if (title) gsap.to(title, { x: shift, duration, ease, overwrite: "auto" });
+          if (index) gsap.to(index, { color: accent, duration, ease, overwrite: "auto" });
+          if (arrowEl) gsap.to(arrowEl, { x: arrow, duration, ease, overwrite: "auto" });
+        };
+
+        const onLeave = () => {
+          entry.classList.remove("is-active");
+          entries.forEach((other) => {
+            if (other !== entry) gsap.to(other, { opacity: 1, duration, ease, overwrite: "auto" });
+          });
+          if (title) gsap.to(title, { x: 0, duration, ease, overwrite: "auto" });
+          if (index && baseColor) gsap.to(index, { color: baseColor, duration, ease, overwrite: "auto" });
+          if (arrowEl) gsap.to(arrowEl, { x: 0, duration, ease, overwrite: "auto" });
+        };
+
+        entry.addEventListener("mouseenter", onEnter);
+        entry.addEventListener("mouseleave", onLeave);
+        listeners.push(() => {
+          entry.removeEventListener("mouseenter", onEnter);
+          entry.removeEventListener("mouseleave", onLeave);
+          entry.classList.remove("is-active");
+        });
       });
     }
+
+    return () => listeners.forEach((off) => off());
   });
-  gsap.set(".exp-entry", { opacity: 0, y: 50 });
-  gsap.set(".exp-index", { opacity: 0, x: -16 });
+
+  return () => ctx.revert();
+}
+
+/* Reduced-motion counterpart: plain opacity fades, no transforms. */
+function experienceReduced(): () => void {
+  const cfg = MOTION.experience;
+  const ctx = gsap.context(() => {
+    document.querySelectorAll<HTMLElement>("[data-reveal='exp-entry']").forEach((entry) => {
+      gsap.fromTo(
+        entry,
+        { opacity: 0 },
+        {
+          opacity: 1,
+          duration: cfg.reduced.duration,
+          ease: cfg.reduced.ease,
+          scrollTrigger: { trigger: entry, start: cfg.start, once: true },
+        },
+      );
+    });
+  });
+  return () => ctx.revert();
 }
 
 /* ------------------------------------------------------------------ */
@@ -815,6 +935,7 @@ function parallax() {
 /*  Boot                                                               */
 /* ------------------------------------------------------------------ */
 let lenisInstance: Lenis | null = null;
+let sectionCleanups: Array<() => void> = [];
 const matchMedia = gsap.matchMedia();
 
 function bootAfterLoad() {
@@ -825,8 +946,8 @@ function bootAfterLoad() {
       () => {
         pageReveals();
         featuredGallery();
-        experienceEntries();
         initCardStack();
+        sectionCleanups.push(experienceSection());
         initMagnetic();
         initUnderlines();
         parallax();
@@ -841,7 +962,8 @@ export function initMotion(): () => void {
 
   if (prefersReducedMotion()) {
     document.querySelector(".loader")?.remove();
-    return () => {};
+    const reducedCleanup = experienceReduced();
+    return () => reducedCleanup();
   }
 
   document.documentElement.classList.add("js");
@@ -863,6 +985,8 @@ export function initMotion(): () => void {
 
   const cleanup = () => {
     window.removeEventListener("load", onLoad);
+    sectionCleanups.forEach((off) => off());
+    sectionCleanups = [];
     lenisInstance?.destroy();
     lenisInstance = null;
     matchMedia.revert();
