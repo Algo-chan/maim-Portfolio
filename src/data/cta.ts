@@ -8,5 +8,6 @@ export interface Cta {
  * [EDIT ME] rewrite in your own voice if you like.
  */
 export const cta: Cta = {
-  featured: "Let's work together and build something that actually ships.",
+  featured:
+    "I'm a Software Engineering student and full-stack developer who loves turning ideas into real digital products. I build modern, user-friendly applications and enjoy solving problems — even when the bug is just one missing semicolon. 😅 Always learning, always building, and always aiming to ship something great. Let's turn ideas into reality! 🚀",
 };
