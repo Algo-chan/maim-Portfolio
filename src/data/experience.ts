@@ -40,7 +40,7 @@ export const experience: Experience[] = [
       "Integrated Chapa payments (switched off during the free pilot) and resolved production issues across PWA builds, routing rewrites, and role-based UI bugs.",
     ],
     tech: "React, TypeScript, Node.js, Express, PostgreSQL, Prisma, Socket.io, Redis, Gemini API, Vercel, Railway",
-    link: { label: "View project →", href: "https://app.fcncare.com" },
+    link: { label: "View project →", href: "https://fcncare.com" },
     stats: ["~100 registered accounts in month one", "50+ on the waitlist"],
   },
   {
@@ -66,7 +66,7 @@ export const experience: Experience[] = [
       "Designed a 39-screen role-based app architecture with unique route IDs, JWT authentication, and real-time updates through Socket.io.",
     ],
     tech: "Flutter, Node.js, JWT, Socket.io, NeDB",
-    link: { label: "View project →", href: "[EDIT ME: GitHub link]" },
+    link: { label: "View project →", href: "https://github.com/Algo-chan/Local-service-connector.git" },
   },
   {
     index: "04",
@@ -80,6 +80,7 @@ export const experience: Experience[] = [
       "Lesson: in multi-model systems, the logic that connects the models usually fails before the models do.",
     ],
     tech: "Python, Streamlit, pandas, MetaTrader5, XGBoost, CNN/LSTM",
+    link: { label: "View plans →", href: "/gold-bot" },
   },
   {
     index: "05",

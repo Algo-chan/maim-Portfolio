@@ -153,8 +153,8 @@ const cardSlots = Array.from({ length: 18 });
                         <a
                           data-reveal="exp-meta"
                           href={item.link.href}
-                          target="_blank"
-                          rel="noopener noreferrer"
+                          target={/^https?:/.test(item.link.href) || item.link.href.startsWith("/") ? "_blank" : undefined}
+                          rel={/^https?:/.test(item.link.href) || item.link.href.startsWith("/") ? "noopener noreferrer" : undefined}
                           class="exp-link inline-flex shrink-0 items-center gap-1.5 self-start rounded-sm text-sm font-medium text-[#363636] underline-offset-4 transition-colors hover:text-[#990900] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990900] focus-visible:ring-offset-4 focus-visible:ring-offset-white sm:self-auto"
                         >
                           <span>{label}</span>

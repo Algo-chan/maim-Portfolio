@@ -1,0 +1,281 @@
+---
+import Layout from "../layouts/Layout.astro";
+import { footerContact } from "../data/footer";
+
+const { email, telegram } = footerContact;
+
+const specs = [
+  { label: "Market", value: "XAUUSD" },
+  { label: "Platform", value: "MetaTrader 5" },
+  { label: "Engines", value: "3" },
+  { label: "Access", value: "Private build" },
+];
+
+const plans = [
+  {
+    code: "ACCESS_01",
+    name: "Monthly",
+    price: "$10",
+    unit: "/ month",
+    terms: "30 days of access",
+    blurb: "Try the bot for a month. Renew only if it earns its keep.",
+    features: ["Full bot access", "MetaTrader 5 setup file", "Email support"],
+    featured: false,
+  },
+  {
+    code: "ACCESS_02",
+    name: "Quarterly",
+    price: "$29",
+    unit: "/ 3 months",
+    terms: "90 days of access",
+    blurb: "Three months billed once — about $9.67 a month.",
+    features: ["Everything in Monthly", "Priority support", "Signal-engine updates"],
+    featured: true,
+  },
+  {
+    code: "ACCESS_03",
+    name: "Lifetime",
+    price: "$99",
+    unit: "one-time",
+    terms: "Access that doesn't expire",
+    blurb: "Pay once and keep it — every update included, forever.",
+    features: ["Everything in Quarterly", "All future updates", "Lifetime access"],
+    featured: false,
+  },
+];
+
+const orderHref = (plan: (typeof plans)[number]) => {
+  const subject = encodeURIComponent("Gold bot access — " + plan.name + " (" + plan.price + ")");
+  const body = encodeURIComponent(
+    "I'd like the " + plan.name + " plan (" + plan.price + " " + plan.unit + ").",
+  );
+  return "mailto:" + email + "?subject=" + subject + "&body=" + body;
+};
+
+const included = [
+  "The full AI gold scalping bot for MetaTrader 5",
+  "Three engines: technical microstructure, ML price prediction, and order-flow analysis",
+  "A step-by-step setup guide, in plain language",
+  "Direct support from me while you're subscribed",
+];
+
+const faqs = [
+  {
+    q: "What happens after I purchase?",
+    a: "You get the MetaTrader 5 setup file and a short install guide at the email you ordered from. Most people are running the bot within 15 minutes.",
+  },
+  {
+    q: "What does the bot trade?",
+    a: "XAUUSD (gold) on MetaTrader 5. It runs three engines — technical microstructure, ML price prediction, and order-flow analysis — and only fires when they agree.",
+  },
+  {
+    q: "Do I need to know how to code?",
+    a: "No. You install the setup file and start it inside MetaTrader 5. If you can install an indicator, you can run this.",
+  },
+  {
+    q: "Can I run it on more than one account?",
+    a: "One plan covers one MetaTrader account. Message me if you need it on more.",
+  },
+  {
+    q: "What is your refund policy?",
+    a: "Access is delivered as soon as you pay, so all sales are final. If the setup doesn't work, I'll help you get it running.",
+  },
+];
+---
+
+<Layout
+  bare
+  title="Get the AI Gold Scalping Bot | Choppa"
+  description="Buy access to an AI-assisted XAUUSD bot for MetaTrader 5. Monthly, quarterly and lifetime plans."
+>
+  <main class="bg-white">
+    <section class="px-6 lg:px-12">
+      <div class="mx-auto w-full max-w-6xl pt-14 pb-16 md:pt-20 md:pb-24">
+        <p class="font-mono text-[11px] uppercase tracking-[0.18em] text-[#990900]" data-reveal="fade-up">
+          AI gold scalping bot — private build
+        </p>
+
+        <h1
+          class="mt-6 max-w-4xl text-[clamp(2.5rem,6vw,4.75rem)] font-medium leading-[1.02] tracking-tight text-[#363636]"
+          data-reveal="fade-up"
+        >
+          Trade gold with a bot that reads the market three ways.
+        </h1>
+
+        <p class="mt-6 max-w-2xl text-pretty text-lg leading-relaxed text-[#5c5c5c]" data-reveal="fade-up">
+          An AI-assisted XAUUSD system running three engines — technical microstructure, machine-learning price
+          prediction, and order-flow analysis. The code stays private. Pick how long you want access.
+        </p>
+
+        <dl
+          class="mt-12 grid grid-cols-2 divide-[#363636]/10 overflow-hidden rounded-2xl border border-[#363636]/10 sm:grid-cols-4 sm:divide-x"
+        >
+          {
+            specs.map((spec) => (
+              <div class="flex flex-col gap-1 px-5 py-4">
+                <dt class="font-mono text-[10px] uppercase tracking-[0.16em] text-[#a3a3a3]">{spec.label}</dt>
+                <dd class="text-base font-medium text-[#363636]">{spec.value}</dd>
+              </div>
+            ))
+          }
+        </dl>
+      </div>
+    </section>
+
+    <section id="plans" class="px-6 lg:px-12">
+      <div class="mx-auto w-full max-w-6xl pb-16 md:pb-24">
+        <div class="flex flex-wrap items-end justify-between gap-4 border-t border-[#363636]/10 pt-10">
+          <h2 class="text-[clamp(1.75rem,3.2vw,2.5rem)] font-medium tracking-tight text-[#363636]" data-reveal="fade-up">
+            Choose your access
+          </h2>
+          <p class="font-mono text-[11px] uppercase tracking-[0.16em] text-[#a3a3a3]">
+            No subscription — pay for the term you want
+          </p>
+        </div>
+
+        <div class="mt-10 grid grid-cols-1 gap-5 lg:grid-cols-3">
+          {
+            plans.map((plan) => (
+              <div
+                data-reveal="fade-up"
+                class={`relative flex flex-col rounded-3xl border p-7 md:p-8 ${
+                  plan.featured
+                    ? "border-[#363636] bg-[#363636] text-white shadow-[0_30px_60px_-30px_rgba(24,24,27,0.55)]"
+                    : "border-[#363636]/12 bg-white"
+                }`}
+              >
+                {plan.featured && (
+                  <span class="absolute right-5 top-5 rounded-full bg-[#990900] px-3 py-1 font-mono text-[10px] uppercase tracking-[0.16em] text-white">
+                    Most popular
+                  </span>
+                )}
+
+                <p class={`font-mono text-[10px] uppercase tracking-[0.16em] ${plan.featured ? "text-white/50" : "text-[#a3a3a3]"}`}>
+                  {plan.code}
+                </p>
+                <h3 class="mt-4 text-2xl font-medium tracking-tight">{plan.name}</h3>
+
+                <div class="mt-5 flex items-baseline gap-2">
+                  <span class="text-[clamp(2.5rem,5vw,3.25rem)] font-medium leading-none tracking-tight">
+                    {plan.price}
+                  </span>
+                  <span class={`text-sm ${plan.featured ? "text-white/60" : "text-[#8a8a8a]"}`}>{plan.unit}</span>
+                </div>
+                <p class="mt-3 text-sm text-[#8a8a8a]">{plan.blurb}</p>
+
+                <div class="mt-6 h-px w-full" style={`background: ${plan.featured ? "#990900" : "rgba(54,54,54,0.1)"}`} />
+
+                <ul class="mt-6 flex flex-col gap-3">
+                  {plan.features.map((feature) => (
+                    <li class="flex items-start gap-3 text-[15px] leading-snug">
+                      <svg
+                        viewBox="0 0 24 24"
+                        fill="none"
+                        stroke="currentColor"
+                        stroke-width="2"
+                        stroke-linecap="round"
+                        stroke-linejoin="round"
+                        class="mt-0.5 h-4 w-4 shrink-0 text-[#990900]"
+                        aria-hidden="true"
+                      >
+                        <path d="M20 6 9 17l-5-5" />
+                      </svg>
+                      <span class={plan.featured ? "text-white/85" : "text-[#4a4a4a]"}>{feature}</span>
+                    </li>
+                  ))}
+                </ul>
+
+                <p class={`mt-6 font-mono text-[10px] uppercase tracking-[0.16em] ${plan.featured ? "text-white/50" : "text-[#a3a3a3]"}`}>
+                  {plan.terms}
+                </p>
+
+                <a
+                  href={orderHref(plan)}
+                  class={`mt-6 inline-flex items-center justify-center rounded-full px-6 py-3 text-sm font-medium transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 ${
+                    plan.featured
+                      ? "bg-[#990900] text-white hover:bg-[#7f0800] focus-visible:ring-[#990900] focus-visible:ring-offset-[#363636]"
+                      : "border border-[#363636]/20 text-[#363636] hover:border-[#363636] hover:bg-[#363636] hover:text-white focus-visible:ring-[#990900] focus-visible:ring-offset-white"
+                  }`}
+                >
+                  Purchase — {plan.price}
+                </a>
+              </div>
+            ))
+          }
+        </div>
+
+        <p class="mt-6 text-center font-mono text-[11px] uppercase tracking-[0.14em] text-[#a3a3a3]">
+          Purchase opens an email with your plan pre-filled
+        </p>
+      </div>
+    </section>
+
+    <section class="px-6 lg:px-12">
+      <div class="mx-auto w-full max-w-6xl pb-16 md:pb-24">
+        <div class="grid grid-cols-1 gap-10 border-t border-[#363636]/10 pt-10 md:grid-cols-[minmax(0,1fr)_minmax(0,1.4fr)] md:gap-16">
+          <h2 class="text-[clamp(1.75rem,3.2vw,2.5rem)] font-medium tracking-tight text-[#363636]" data-reveal="fade-up">
+            Every plan includes
+          </h2>
+          <ul class="flex flex-col gap-5">
+            {
+              included.map((item) => (
+                <li class="flex items-start gap-4 border-b border-[#363636]/10 pb-5 text-[15px] leading-relaxed text-[#4a4a4a]">
+                  <span class="mt-2 h-1.5 w-1.5 shrink-0 rounded-full bg-[#990900]" aria-hidden="true" />
+                  {item}
+                </li>
+              ))
+            }
+          </ul>
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 lg:px-12">
+      <div class="mx-auto w-full max-w-6xl pb-16 md:pb-24">
+        <h2 class="text-[clamp(1.75rem,3.2vw,2.5rem)] font-medium tracking-tight text-[#363636]" data-reveal="fade-up">
+          Questions
+        </h2>
+        <div class="mt-8 divide-y divide-[#363636]/10 border-y border-[#363636]/10">
+          {
+            faqs.map((faq) => (
+              <details class="group py-5">
+                <summary class="flex cursor-pointer list-none items-center justify-between gap-6 text-[17px] font-medium text-[#363636] marker:content-none">
+                  {faq.q}
+                  <span
+                    class="font-mono text-lg text-[#a3a3a3] transition-transform group-open:rotate-45"
+                    aria-hidden="true"
+                  >
+                    +
+                  </span>
+                </summary>
+                <p class="mt-3 max-w-2xl text-[15px] leading-relaxed text-[#5c5c5c]">{faq.a}</p>
+              </details>
+            ))
+          }
+        </div>
+      </div>
+    </section>
+
+    <section class="px-6 lg:px-12">
+      <div class="mx-auto w-full max-w-6xl pb-24 md:pb-36">
+        <div class="flex flex-col items-start justify-between gap-6 rounded-3xl bg-[#f4f4f2] px-8 py-10 sm:flex-row sm:items-center">
+          <div>
+            <h2 class="text-[clamp(1.5rem,2.6vw,2rem)] font-medium tracking-tight text-[#363636]">
+              Not sure which plan fits?
+            </h2>
+            <p class="mt-2 text-[15px] text-[#5c5c5c]">Message me and I'll point you to the right one.</p>
+          </div>
+          <a
+            href={telegram}
+            target="_blank"
+            rel="noopener noreferrer"
+            class="inline-flex shrink-0 items-center gap-2 rounded-full bg-[#363636] px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-[#990900] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990900] focus-visible:ring-offset-2 focus-visible:ring-offset-[#f4f4f2]"
+          >
+            Message on Telegram
+            <span aria-hidden="true">→</span>
+          </a>
+        </div>
+      </div>
+    </section>
+  </main>
+</Layout>

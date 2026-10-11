@@ -12,6 +12,8 @@ interface Props {
   image?: string;
   /** Page URL used for og:url and canonical. Defaults to the current path. */
   url?: string;
+  /** Standalone page: no site footer and no portfolio motion engine. */
+  bare?: boolean;
 }
 
 const {
@@ -20,6 +22,7 @@ const {
   twitterDescription = "Full stack developer and founder of FCN, a live healthcare platform in Ethiopia.",
   image = `${SITE_URL}/og.png`,
   url = `${SITE_URL}${Astro.url.pathname}`,
+  bare = false,
 } = Astro.props;
 
 const ogImage = image.startsWith("http") ? image : `${SITE_URL}${image}`;
@@ -29,7 +32,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="en" class={bare ? "is-standalone" : undefined}>
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
@@ -83,11 +86,13 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <div id="page">
       <slot />
     </div>
-    <Footer />
+    {!bare && <Footer />}
     <script>
       import { initMotion } from "../lib/motion";
-      const cleanupMotion = initMotion();
-      window.addEventListener("beforeunload", cleanupMotion, { once: true });
+      if (!document.documentElement.classList.contains("is-standalone")) {
+        const cleanupMotion = initMotion();
+        window.addEventListener("beforeunload", cleanupMotion, { once: true });
+      }
     </script>
   </body>
 </html>

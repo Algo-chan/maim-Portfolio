@@ -323,8 +323,8 @@ const contactLinks = [
       /* The single source of truth: icon, label, disabled and data-state all
          derive from `state` + `step`. Animations key off data-state. */
       const setState = (next: State) => {
+        const prev = state;
         state = next;
-        console.debug("[send-state]", state);
         actionButton.dataset.state = state;
         actionButton.dataset.step = step;
         actionButton.disabled = state !== "ready";
@@ -339,9 +339,15 @@ const contactLinks = [
                 : "Send message";
         ctl?.setLabel(label);
 
-        /* Step 1 is always the arrow; step 2 shows the plane unless idle. */
-        ctl?.setIcon(step === "message" && state !== "idle" ? "plane" : "arrow");
-        ctl?.setBusy(state === "sending");
+        if (state === "sending") {
+          ctl?.setBusy(true);
+        } else if (prev === "sending") {
+          /* Restore the icon the spinner was hiding (no morph needed). */
+          ctl?.setBusy(false);
+        } else {
+          /* Step 1 is always the arrow; step 2 morphs to the plane when ready. */
+          ctl?.setIcon(step === "message" && state !== "idle" ? "plane" : "arrow");
+        }
       };
 
       const openMessage = () => {
@@ -507,6 +513,13 @@ const contactLinks = [
           const next = isEmailValid() ? "ready" : "idle";
           if (next === "ready" && state === "idle") ctl?.pulse();
           setState(next);
+        }
+      });
+
+      emailInput.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          form.requestSubmit();
         }
       });
 
