@@ -1,0 +1,121 @@
+---
+interface Props {
+  label: string;
+  href?: string;
+  external?: boolean;
+  copy?: boolean;
+  class?: string;
+}
+
+const { label, href = "#", external = false, copy = false, class: extraClass = "" } = Astro.props;
+
+const chars = Array.from(label);
+
+const rootClass = [
+  "roll-link inline-block align-top text-xs font-medium uppercase tracking-[0.18em] text-[#363636] transition-colors hover:text-[#990900] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990900] focus-visible:ring-offset-2 focus-visible:ring-offset-white",
+  extraClass,
+]
+  .join(" ")
+  .trim();
+---
+
+{
+  copy ? (
+    <button type="button" data-copy-email data-roll aria-label={label} class={rootClass}>
+      {chars.map((ch) => (
+        <span class:list={["roll-char", ch === " " && "roll-char--space"]} aria-hidden="true">
+          <span class="roll-track">
+            <span class="roll-face">{ch}</span>
+            <span class="roll-face roll-face--dup" aria-hidden="true">
+              {ch}
+            </span>
+          </span>
+        </span>
+      ))}
+    </button>
+  ) : (
+    <a
+      href={href}
+      target={external ? "_blank" : undefined}
+      rel={external ? "noopener noreferrer" : undefined}
+      data-roll
+      aria-label={label}
+      class={rootClass}
+    >
+      {chars.map((ch) => (
+        <span class:list={["roll-char", ch === " " && "roll-char--space"]} aria-hidden="true">
+          <span class="roll-track">
+            <span class="roll-face">{ch}</span>
+            <span class="roll-face roll-face--dup" aria-hidden="true">
+              {ch}
+            </span>
+          </span>
+        </span>
+      ))}
+    </a>
+  )
+}
+
+<style is:global>
+  .roll-link {
+    position: relative;
+    display: inline-block;
+    text-decoration: none;
+  }
+
+  .roll-link::after {
+    content: "";
+    position: absolute;
+    right: 0;
+    bottom: -0.2em;
+    left: 0;
+    height: 1px;
+    background: currentColor;
+    opacity: 0.3;
+    pointer-events: none;
+    transition: opacity 0.25s ease;
+  }
+
+  .roll-link:hover::after,
+  .roll-link:focus-visible::after {
+    opacity: 1;
+  }
+
+  .roll-char {
+    position: relative;
+    display: inline-block;
+    height: 1.15em;
+    overflow: hidden;
+    line-height: 1.15em;
+    vertical-align: top;
+  }
+
+  .roll-char--space {
+    width: 0.34em;
+  }
+
+  .roll-track {
+    position: relative;
+    display: block;
+    will-change: transform;
+  }
+
+  .roll-face {
+    display: block;
+    height: 1.15em;
+    line-height: 1.15em;
+    white-space: pre;
+  }
+
+  .roll-face--dup {
+    position: absolute;
+    top: 100%;
+    left: 0;
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .roll-track {
+      transform: none !important;
+    }
+  }
+</style>

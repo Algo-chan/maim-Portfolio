@@ -1,0 +1,75 @@
+---
+interface Props {
+  label?: string;
+}
+
+const { label = "Continue" } = Astro.props;
+---
+
+<button
+  type="submit"
+  data-action
+  data-step="email"
+  data-state="idle"
+  aria-label={label}
+  disabled
+  class="action-btn group relative grid h-12 w-12 shrink-0 place-items-center rounded-full transition-colors focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#990900] focus-visible:ring-offset-2 focus-visible:ring-offset-white disabled:cursor-not-allowed disabled:opacity-50"
+>
+  <span class="relative block h-5 w-5" aria-hidden="true">
+    <svg
+      data-icon="arrow"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="absolute inset-0 h-full w-full"
+    >
+      <path d="M5 12h14M13 6l6 6-6 6"></path>
+    </svg>
+    <svg
+      data-icon="plane"
+      xmlns="http://www.w3.org/2000/svg"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      stroke-width="1.7"
+      stroke-linecap="round"
+      stroke-linejoin="round"
+      class="absolute inset-0 h-full w-full opacity-0"
+    >
+      <path d="M22 2 11 13"></path>
+      <path d="M22 2 15 22 11 13 2 9 22 2z"></path>
+    </svg>
+    <span
+      data-send-spinner
+      hidden
+      class="absolute inset-0 m-auto h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent motion-reduce:animate-none"
+    ></span>
+  </span>
+</button>
+
+<style>
+  .action-btn {
+    border: 1px solid rgb(54 54 54 / 0.3);
+    color: #363636;
+  }
+
+  .action-btn:not(:disabled):hover {
+    background: #363636;
+    color: #fff;
+  }
+
+  .action-btn[data-step="message"] {
+    border-color: transparent;
+    background: #363636;
+    color: #fff;
+  }
+
+  .action-btn[data-step="message"]:not(:disabled):hover {
+    background: #990900;
+    color: #fff;
+  }
+</style>

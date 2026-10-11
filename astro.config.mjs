@@ -3,6 +3,7 @@ import { defineConfig } from "astro/config";
 import { loadEnv } from "vite";
 import tailwindcss from "@tailwindcss/vite";
 import sitemap from "@astrojs/sitemap";
+import vercel from "@astrojs/vercel";
 
 const env = loadEnv(process.env.NODE_ENV ?? "production", process.cwd(), "");
 
@@ -26,6 +27,9 @@ function resolveSite(raw) {
 export default defineConfig({
   site: resolveSite(env.SITE_URL),
   integrations: [sitemap()],
+  // Vercel adapter enables the on-demand `/api/contact` route while every
+  // page stays statically prerendered (Astro 5 default output: "static").
+  adapter: vercel(),
   vite: {
     plugins: [tailwindcss()],
   },

@@ -4,6 +4,15 @@
   --font-sans: "Futura Now Headline", ui-sans-serif, system-ui, sans-serif;
 }
 
+:root {
+  /* Solid site background — also the curtain face, so the footer stays hidden
+     underneath until #page lifts. Swap here to re-theme without touching JS. */
+  --bg: #ffffff;
+  /* Measured natural height of the footer; written by the ResizeObserver in
+     lib/motion.ts and consumed as #page's bottom margin. */
+  --footer-h: 0px;
+}
+
 html {
   scrollbar-gutter: stable;
 }
@@ -221,16 +230,134 @@ h1 {
   --experience-accent: #990900;
 }
 
-.site-footer {
-  padding: 2em 1em 6em;
-  text-align: center;
+/* ------------------------------------------------------------------ */
+/*  Curtain footer layout                                              */
+/*                                                                     */
+/*  Default (no JS, reduced motion, or a footer taller than the        */
+/*  viewport): everything is a normal static footer in the document    */
+/*  flow. Once JS measures that the footer fits, lib/motion.ts adds    */
+/*  `html.curtain`, which pins the footer behind the page and gives    */
+/*  #page the bottom margin that creates the reveal room.              */
+/* ------------------------------------------------------------------ */
+#site-footer {
+  position: relative;
+  z-index: 0;
+  background: var(--bg);
 }
 
-.social-links {
-  display: flex;
-  justify-content: center;
-  gap: 1rem;
-  margin-top: 1.5em;
+html.curtain #site-footer {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  z-index: 0;
+  /* Clips the inner wrapper's parallax so it can never leak above the edge. */
+  overflow: hidden;
+  /* iOS Safari sometimes flickers a fixed layer during the reveal. */
+  transform: translateZ(0);
+}
+
+html.curtain #page {
+  position: relative;
+  z-index: 1;
+  background: var(--bg);
+  margin-bottom: var(--footer-h);
+  /* The lifting "curtain edge". */
+  border-radius: 0 0 32px 32px;
+  box-shadow: 0 34px 60px -30px rgb(24 24 27 / 0.4);
+}
+
+@media (max-width: 639px) {
+  html.curtain #page {
+    border-radius: 0 0 24px 24px;
+  }
+}
+
+/* ------------------------------------------------------------------ */
+/*  Compact mobile curtain footer                                      */
+/*                                                                     */
+/*  Phones (and short landscape phones) get a condensed footer that    */
+/*  fits inside 100svh, so the curtain reveal can run everywhere.      */
+/*  Desktop (>=768px, tall viewports) is intentionally untouched.      */
+/* ------------------------------------------------------------------ */
+@media (max-width: 767px), (min-width: 768px) and (max-width: 1024px) and (orientation: landscape) and (max-height: 500px) {
+  #site-footer {
+    min-height: auto;
+  }
+
+  #site-footer [data-footer-inner] {
+    padding: 1.25rem 1.25rem 0.75rem;
+  }
+
+  /* Headline and portrait share one row instead of stacking. */
+  #site-footer [data-footer-inner] > .grid:first-child {
+    grid-template-columns: minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 0.75rem 1rem;
+  }
+
+  #site-footer h2 {
+    max-width: 12ch;
+    font-size: clamp(2.2rem, 8.5vw, 3rem);
+    line-height: 0.95;
+  }
+
+  #site-footer [data-photo] {
+    width: 104px;
+    height: 104px;
+    aspect-ratio: 1 / 1;
+    border-radius: 9999px;
+  }
+
+  #site-footer [data-contact-form] {
+    margin-top: 1rem;
+  }
+
+  #site-footer #contact-email,
+  #site-footer [data-locked-email] {
+    font-size: clamp(1rem, 4.5vw, 1.25rem);
+  }
+
+  #site-footer nav[aria-label="Contact links"] {
+    margin-top: 1rem;
+    gap: 0.4rem 1.25rem;
+  }
+
+  #site-footer nav[aria-label="Contact links"] a,
+  #site-footer nav[aria-label="Contact links"] button {
+    font-size: 0.65rem;
+  }
+
+  /* Bottom bar: copyright + back to top only. */
+  #site-footer [data-footer-inner] > .grid:last-child {
+    margin-top: 1rem;
+    padding-top: 0.75rem;
+    grid-template-columns: 1fr auto;
+    gap: 0.5rem;
+  }
+
+  #site-footer [data-live-time] {
+    display: none;
+  }
+
+  #site-footer [data-to-top] {
+    text-align: right;
+  }
+
+  /* While the message textarea is open the footer can outgrow 100svh
+     (especially in landscape) — let it scroll internally instead of
+     pushing content off-screen. */
+  html.curtain.is-message-open #site-footer {
+    max-height: 100svh;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+}
+
+/* Bottom bar: live clock uses tabular figures so it never jitters. */
+[data-time] {
+  font-variant-numeric: tabular-nums;
 }
 
 /* Inert lenis CSS — matches reference, native scrolling */

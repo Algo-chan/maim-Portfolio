@@ -8,6 +8,9 @@ import Lenis from "lenis";
 
 gsap.registerPlugin(ScrollTrigger, Flip, ScrollToPlugin, ExpoScaleEase);
 gsap.config({ force3D: true });
+/* The mobile address bar changing height must not re-trigger refreshes and
+   cause the curtain to jump. */
+ScrollTrigger.config({ ignoreMobileResize: true });
 
 /* ------------------------------------------------------------------ */
 /*  Global motion tokens — tune the whole page from this one object.  */
@@ -177,6 +180,85 @@ export const MOTION = {
     heroYPercent: -10,
     heroOpacity: 0.3,
   },
+
+  /* Curtain footer reveal + message flow */
+  footer: {
+    /* ScrollTrigger window: #page's bottom meets the viewport bottom, then
+       scrolls one footer-height further (end is computed as += footer height
+       so the reveal spans exactly the uncovered distance). */
+    start: "bottom bottom",
+    end: "bottom top",
+    /* Inner wrapper parallax while the curtain lifts. */
+    parallaxFrom: -20,
+    /* Message textarea open/close. */
+    message: {
+      openDuration: 0.6,
+      openEase: "power3.inOut",
+    },
+    /* Flashlight reveal on the profile photo. */
+    spotlight: {
+      /* Radius as a fraction of the photo's width (tune to taste). */
+      radiusFactor: 0.28,
+      /* Cursor-follow smoothing. */
+      moveDuration: 0.35,
+      moveEase: "power3.out",
+      /* Grow (enter) / shrink (leave) of the spotlight. */
+      growDuration: 0.4,
+      growEase: "power3.out",
+      /* Self-drifting lissajous path for touch devices. */
+      driftDuration: 8,
+      driftAmpX: 0.34,
+      driftAmpY: 0.3,
+      /* Idle time after a touch before drifting resumes. */
+      resumeDelay: 2,
+    },
+    /* Subtle 3D depth tilt layered on top of the flashlight reveal. */
+    tilt: {
+      /* Max rotation from centre to edge, in degrees (4 = alive, not gimmicky). */
+      maxAngle: 4,
+      /* Scale + forward lift while hovered. */
+      maxScale: 1.02,
+      lift: 10,
+      /* Cursor-follow smoothing for the tilt. */
+      moveDuration: 0.5,
+      moveEase: "power3.out",
+      /* Ease back to rest on pointer leave. */
+      returnDuration: 0.8,
+      returnEase: "power3.out",
+      /* Sheen highlight strength (alpha) + how far the shadow drifts, in px. */
+      sheenOpacity: 0.12,
+      shadowShift: 8,
+      shadowY: 14,
+    },
+    /* Text-roll links: each letter (and its duplicate) rolls up one line. */
+    roll: {
+      duration: 0.5,
+      ease: "power3.inOut",
+      stagger: 0.025,
+    },
+    /* Morphing send button: one circular button, five states. */
+    send: {
+      /* Arrow → plane morph: arrow rotates -45° and cross-fades to the plane. */
+      morph: { duration: 0.45, ease: "back.out(1.7)", rotate: -45 },
+      /* "Ready" signal pulse (1 → 1.08 → 1). */
+      pulse: { scale: 1.08, duration: 0.18, ease: "power2.inOut" },
+      /* Success flight: off to the top-right. */
+      flight: { x: 120, y: -120, scale: 0.4, duration: 0.7, ease: "power3.in" },
+      /* Error shake (x oscillation). */
+      shake: { amplitude: 6, duration: 0.4, ease: "power2.out" },
+      /* Input block fade-out before the success message is shown. */
+      formFade: { duration: 0.5, ease: "power2.out" },
+      /* Success check-mark path draw. */
+      check: { duration: 0.6, ease: "power2.out" },
+    },
+    /* Scroll-progress back-to-top ring. */
+    progress: {
+      pressScale: 0.92,
+      pressDuration: 0.18,
+      pressEase: "power2.out",
+      scrollDuration: 1.4,
+    },
+  },
 } as const;
 
 /* ------------------------------------------------------------------ */
@@ -193,6 +275,9 @@ const experienceAccent = () =>
 /*  Smooth scroll (Lenis ↔ GSAP)                                       */
 /* ------------------------------------------------------------------ */
 function initSmoothScroll(): Lenis | null {
+  /* Touch devices scroll natively — Lenis would fight the browser and the
+     mobile viewport. ScrollTrigger's scrub works fine with native scroll. */
+  if (!isFinePointer()) return null;
   const lenis = new Lenis({
     autoRaf: false,
     lerp: MOTION.scrollSmooth.lerp,
@@ -932,11 +1017,131 @@ function parallax() {
 }
 
 /* ------------------------------------------------------------------ */
+/*  Curtain footer reveal                                              */
+/*                                                                     */
+/*  #site-footer is fixed behind #page. #page gets a bottom margin     */
+/*  equal to the footer's measured height, so the document is exactly  */
+/*  page + footer tall and the footer is uncovered as the page lifts.  */
+/*  Falls back to a static footer only when reduced motion is on or the */
+/*  footer is still taller than the viewport AFTER the compact mobile   */
+/*  layout — never by screen width alone.                              */
+/* ------------------------------------------------------------------ */
+function footerCurtain(): () => void {
+  const page = document.querySelector<HTMLElement>("#page");
+  const footer = document.querySelector<HTMLElement>("#site-footer");
+  const inner = footer?.querySelector<HTMLElement>("[data-footer-inner]") ?? null;
+  if (!page || !footer || !inner) return () => {};
+
+  const root = document.documentElement;
+  let ctx: gsap.Context | null = null;
+  let enabled = false;
+  let restingHeight = 0;
+
+  /* True while the message textarea is open (see Footer.astro + global.css). */
+  const isMessageOpen = () => root.classList.contains("is-message-open");
+
+  /* A little slack so a near-viewport-tall footer doesn't thrash on scroll.
+     Width is deliberately not part of this test: the compact mobile layout
+     (see global.css) is what makes phones fit. */
+  const fits = (height: number) => height > 0 && height < window.innerHeight - 8;
+
+  const enable = () => {
+    root.classList.add("curtain");
+    footer.inert = true;
+    enabled = true;
+    ctx = gsap.context(() => {
+      /* The reveal's end coincides with the document's max scroll, so
+         `isActive` flips back to false on the final pixel — exactly when the
+         footer is fully revealed. Drive interactivity from progress instead,
+         so the footer is never left inert at the bottom of the page. */
+      const applyInert = (self: ScrollTrigger) => {
+        footer.inert = self.progress <= 0.001;
+      };
+      const trigger = ScrollTrigger.create({
+        trigger: page,
+        start: MOTION.footer.start,
+        end: () => `+=${restingHeight || footer.offsetHeight}`,
+        scrub: true,
+        animation: gsap.fromTo(
+          inner,
+          { yPercent: MOTION.footer.parallaxFrom },
+          { yPercent: 0, ease: "none" },
+        ),
+        onUpdate: applyInert,
+        onEnter: applyInert,
+        onLeave: applyInert,
+        onEnterBack: applyInert,
+        onLeaveBack: applyInert,
+      });
+      footer.inert = trigger.progress <= 0.001;
+    }, footer);
+  };
+
+  const disable = () => {
+    enabled = false;
+    root.classList.remove("curtain");
+    root.style.removeProperty("--footer-h");
+    footer.inert = false;
+    ctx?.revert();
+    ctx = null;
+    gsap.set(inner, { clearProps: "transform" });
+  };
+
+  const sync = () => {
+    const height = footer.offsetHeight;
+    /* While the message textarea is open the footer is allowed to exceed the
+       viewport (it scrolls internally — see global.css). Anchor the curtain to
+       the footer's resting height so opening it never flips to the static
+       fallback or shifts #page's bottom margin. */
+    if (!isMessageOpen() || restingHeight === 0) restingHeight = height;
+    root.style.setProperty("--footer-h", `${restingHeight}px`);
+    if (fits(restingHeight)) {
+      if (!enabled) enable();
+    } else if (enabled) {
+      disable();
+    }
+  };
+
+  const ro = new ResizeObserver(() => {
+    sync();
+    ScrollTrigger.refresh();
+  });
+  ro.observe(footer);
+
+  const onResize = () => {
+    sync();
+    ScrollTrigger.refresh();
+  };
+  window.addEventListener("resize", onResize);
+  window.addEventListener("orientationchange", onResize);
+  window.visualViewport?.addEventListener("resize", onResize);
+
+  sync();
+  document.fonts?.ready.then(() => {
+    sync();
+    ScrollTrigger.refresh();
+  });
+
+  return () => {
+    ro.disconnect();
+    window.removeEventListener("resize", onResize);
+    window.removeEventListener("orientationchange", onResize);
+    window.visualViewport?.removeEventListener("resize", onResize);
+    disable();
+  };
+}
+
+/* ------------------------------------------------------------------ */
 /*  Boot                                                               */
 /* ------------------------------------------------------------------ */
 let lenisInstance: Lenis | null = null;
 let sectionCleanups: Array<() => void> = [];
 const matchMedia = gsap.matchMedia();
+
+/** Exposed so footer controls (back-to-top) reuse the active smooth scroller. */
+export function getLenis(): Lenis | null {
+  return lenisInstance;
+}
 
 function bootAfterLoad() {
   window.setTimeout(() => {
@@ -948,6 +1153,7 @@ function bootAfterLoad() {
         featuredGallery();
         initCardStack();
         sectionCleanups.push(experienceSection());
+        sectionCleanups.push(footerCurtain());
         initMagnetic();
         initUnderlines();
         parallax();

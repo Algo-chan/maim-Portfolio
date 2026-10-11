@@ -1,6 +1,7 @@
 ---
 import "../styles/global.css";
 import { SITE_URL } from "../lib/seo";
+import Footer from "../components/Footer.astro";
 
 interface Props {
   title?: string;
@@ -78,7 +79,11 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     }
   </head>
   <body>
-    <slot />
+    <!-- The page sits above the fixed footer and lifts to reveal it. -->
+    <div id="page">
+      <slot />
+    </div>
+    <Footer />
     <script>
       import { initMotion } from "../lib/motion";
       const cleanupMotion = initMotion();
