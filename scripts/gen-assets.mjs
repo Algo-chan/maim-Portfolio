@@ -28,7 +28,8 @@ const THEME = {
   gold: "#bd8f2c", // brand accent
   gray: "#5a5a5d", // subtitle
   muted: "#9f9f9f", // bottom line
-  cardBg: "#16150f", // favicon tile
+  cardBg: "#1c1c1c", // favicon tile
+  accent: "#990900", // monogram accent
 };
 
 const FONT_STACK = `"Futura Now Headline","Century Gothic","PingFang SC","Hiragino Sans GB",Arial,sans-serif`;
@@ -36,18 +37,13 @@ const FONT_STACK = `"Futura Now Headline","Century Gothic","PingFang SC","Hiragi
 /* ------------------------------------------------------------------ */
 /* Favicon tile (shared by every rasterized favicon size)               */
 /* ------------------------------------------------------------------ */
-function faviconSvg({ size, radiusRatio = 14 / 64 }) {
-  const radius = Math.round(size * radiusRatio);
-  const strokeWidth = Math.round(size * (12 / 64));
-  // Arc endpoints placed inside the stroke so the round caps preserve a clean C.
-  const inset = strokeWidth / 2 + 2;
-  const r = size / 2 - inset;
-  const cx = size / 2;
-  const half = Math.sqrt(r * r - (size * 0.18) ** 2); // x-offset for the hole
-  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 ${size} ${size}">
-  <rect width="${size}" height="${size}" rx="${radius}" fill="${THEME.cardBg}"/>
-  <path d="M ${cx + half} ${cx - r} A ${r} ${r} 0 1 0 ${cx + half} ${cx + r}"
-        fill="none" stroke="${THEME.gold}" stroke-width="${strokeWidth}" stroke-linecap="round"/>
+function faviconSvg({ size }) {
+  return `<svg xmlns="http://www.w3.org/2000/svg" width="${size}" height="${size}" viewBox="0 0 64 64">
+  <rect width="64" height="64" rx="15" fill="${THEME.cardBg}"/>
+  <path d="M20 45 V19 M44 45 V19" fill="none" stroke="#ffffff" stroke-width="7.2"
+        stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M20 19 L32 38 L44 19" fill="none" stroke="${THEME.accent}" stroke-width="7.2"
+        stroke-linecap="round" stroke-linejoin="round"/>
 </svg>`;
 }
 
@@ -117,8 +113,8 @@ function ogSvg({ hasPhoto }) {
   <rect width="1200" height="630" fill="url(#dots)"/>
 
   <!-- Big name -->
-  <text x="88" y="292" font-family='${FONT_STACK}' font-size="196" font-weight="700" letter-spacing="4"
-        fill="${THEME.ink}">CHOPPA</text>
+  <text x="88" y="292" font-family='${FONT_STACK}' font-size="150" font-weight="700" letter-spacing="2"
+        fill="${THEME.ink}">MUHAMMAD</text>
 
   <!-- Subtitle -->
   <text x="92" y="368" font-family='${FONT_STACK}' font-size="43" font-weight="400"

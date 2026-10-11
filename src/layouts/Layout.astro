@@ -17,7 +17,7 @@ interface Props {
 }
 
 const {
-  title = "Choppa | Full Stack Developer & Founder of FCN",
+  title = "Muhammad Abdulfgefar | Full Stack Developer & Founder of FCN",
   description = "Full stack developer and founder of FCN, a live healthcare platform in Ethiopia. I build with React, Node.js and TypeScript, and think like an attacker.",
   twitterDescription = "Full stack developer and founder of FCN, a live healthcare platform in Ethiopia.",
   image = `${SITE_URL}/og.png`,
@@ -26,7 +26,7 @@ const {
 } = Astro.props;
 
 const ogImage = image.startsWith("http") ? image : `${SITE_URL}${image}`;
-const ogImageAlt = "Choppa, Full Stack Developer and Founder of FCN";
+const ogImageAlt = "Muhammad Abdulfgefar, Full Stack Developer and Founder of FCN";
 
 const gaId = import.meta.env.PUBLIC_GA_ID;
 ---
@@ -50,7 +50,7 @@ const gaId = import.meta.env.PUBLIC_GA_ID;
     <meta property="og:image:height" content="630" />
     <meta property="og:image:alt" content={ogImageAlt} />
     <meta property="og:url" content={url} />
-    <meta property="og:site_name" content="Choppa" />
+    <meta property="og:site_name" content="Muhammad Abdulfgefar" />
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
