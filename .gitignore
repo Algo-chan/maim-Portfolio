@@ -2,6 +2,9 @@
 dist/
 .astro/
 
+# vercel build output
+.vercel/
+
 # dependencies
 node_modules/
 
