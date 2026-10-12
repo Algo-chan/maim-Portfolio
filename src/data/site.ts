@@ -25,7 +25,7 @@ export const site: Site = {
   location: "Dire Dawa, Ethiopia",
   role: "Software Engineering student & full-stack developer",
   // [EDIT ME] tweak your tagline here
-  tagline: "Building real-world products, one commit at a time",
+  tagline: "Founder-developer shipping live products for Ethiopia, and breaking them on purpose to make them safer.",
   email: "wealthyempire13@gmail.com",
   links: [
     { label: "GitHub", url: "https://github.com/Algo-chan" },
